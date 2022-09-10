@@ -8,26 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var isNight = false
+    
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(
-                colors: [.blue, Color("LightBlue")]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                .edgesIgnoringSafeArea(.all)
+            BgView(isNight: $isNight)
             VStack{
-                Text("Lodz, Poland")
-                    .font(.system(size: 32, weight: .medium, design: .default))
-                    .foregroundColor(.white)
-                    .padding()
-                VStack(spacing: 8) {
-                    Image(systemName: "sunset.fill")
-                        .renderingMode(.original)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 180, height: 180)
-                    Text("54°")
-                        .font(.system(size: 70, weight: .medium))
-                        .foregroundColor(.white)
-                }.padding(.bottom, 50)
+                CirtTextView(cityName: "Lodz", countryName: "Poland")
+                MainWeatherStatus(imageName: isNight ? "moon.stars.fill" : "cloud.sun.fill", temprature: isNight ? 20 : 54)
                 HStack(spacing: 15){
                     WeatherDayView(
                         dayofWeek: "TUE",
@@ -50,6 +39,14 @@ struct ContentView: View {
                         imageName: "snow",
                         temprature: 14)
                 }
+                Spacer()
+                
+                Button {
+                    isNight.toggle()
+                }label: {
+                    WeatherButton(title: "Change Day Time", textColor: .blue, bgColor: .white)
+                }
+                
                 Spacer()
             }
         }
@@ -85,5 +82,48 @@ struct WeatherDayView: View {
                 .foregroundColor(.white)
                 .padding(5)
         }
+    }
+}
+
+struct BgView: View {
+    
+    @Binding var isNight:Bool
+    
+    var body: some View {
+        LinearGradient(gradient: Gradient(
+            colors: [isNight ? .black : .blue,                         isNight ? .gray : Color("lightBlue")]), startPoint: .topLeading, endPoint: .bottomTrailing)
+        .edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct CirtTextView: View{
+    
+    var cityName: String
+    var countryName: String
+    
+    var body: some View{
+        Text(cityName + ", " + countryName)
+            .font(.system(size: 32, weight: .medium, design: .default))
+            .foregroundColor(.white)
+            .padding()
+    }
+}
+
+struct MainWeatherStatus: View {
+    
+    var imageName: String
+    var temprature: Int
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: imageName)
+                .renderingMode(.original)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 180, height: 180)
+            Text("\(temprature)°")
+                .font(.system(size: 70, weight: .medium))
+                .foregroundColor(.white)
+        }.padding(.bottom, 50)
     }
 }
